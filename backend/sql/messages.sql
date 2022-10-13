@@ -1,3 +1,5 @@
+
+
 CREATE TABLE messages
 (
     id uuid PRIMARY KEY DEFAULT uuid_in(md5(random()::text || random()::text)::cstring),
