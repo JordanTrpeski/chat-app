@@ -1,6 +1,16 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {useIsLoggedIn} from "../hooks/auth";
+import {useEffect} from "react";
 
 function Register() {
+    const isLoggedIn = useIsLoggedIn()
+    const navigate = useNavigate()
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigate("/")
+        }
+    },[isLoggedIn])
+
     return <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="px-8 py-6 mx-4 mt-4 text-left bg-white shadow-lg md:w-1/3 lg:w-1/3 sm:w-1/3">
             <h3 className="text-2xl font-bold text-center">Register</h3>
