@@ -71,6 +71,14 @@ export async function get_username() {
     return process_result<string>(value)
 }
 
+export async function logout() {
+    const value = await fetch(api_url + `/user/logout`, {
+        mode: 'cors',
+        credentials: 'include'
+    }).then(response => response.json())
+    return process_result<undefined>(value)
+}
+
 export async function register(username: string, password: string, profile: Profile) {
     const value = await fetch(api_url + `/user/register`, {
         method: 'POST',

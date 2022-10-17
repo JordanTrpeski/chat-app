@@ -3,7 +3,7 @@ import {
     change_profile,
     get_profile,
     get_username,
-    login,
+    login, logout,
     PasswordChangeDetails,
     Profile, register
 } from "../api/user";
@@ -43,4 +43,8 @@ export function useChangePassword(details: PasswordChangeDetails) {
 
 export function useRegister(username: string, password: string, profile: Profile) {
     return useAction(() => register(username, password, profile), [username, password, profile])
+}
+
+export function useLogout() {
+    return useAction(logout, [])
 }

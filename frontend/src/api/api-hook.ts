@@ -26,17 +26,30 @@ export function useApi<T>(key : string, fn : () => Promise<T>) : ApiResponse<T> 
 export function useAction<T>(fn : () => Promise<T>, deps: any[]) {
     const [response, setResponse] = useState<T|undefined>(undefined)
     const [error, setError] = useState<undefined|any>(undefined)
+    const [sent, setSent] = useState<boolean>(false)
+    const [errored, setErrored] = useState<boolean>(false)
+
     const send = useCallback(() => {
         fn().then(value => {
             setResponse(value)
+            setSent(true)
         }).catch(error => {
             setError(error)
+            setErrored(true)
         })
     }, deps)
 
     return {
         response,
         error,
-        send
+        send,
+        sent,
+        errored,
+        reset: () => {
+            setResponse(undefined)
+            setError(undefined)
+            setSent(false)
+            setErrored(false)
+        }
     }
 }

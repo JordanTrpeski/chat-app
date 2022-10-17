@@ -19,6 +19,14 @@ router.post('/login', create_async_response(async req => {
     return token
 }))
 
+router.get('/logout', create_async_response(async req => {
+    req.res.cookie('auth_token', '', {
+        httpOnly: true,
+        expires: 0,
+        sameSite: "strict"
+    })
+}))
+
 router.post('/profile', create_async_response(req =>
     users.change_profile(req.cookies['auth_token'], req.body)))
 
