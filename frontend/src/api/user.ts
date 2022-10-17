@@ -1,12 +1,12 @@
 import {api_url, process_result} from "./config";
 
-interface Profile {
+export interface Profile {
     first_name : string,
     last_name : string,
     bio : string
 }
 
-interface PasswordChangeDetails {
+export interface PasswordChangeDetails {
     old_password: string,
     new_password: string
 }

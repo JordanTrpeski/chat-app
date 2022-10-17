@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+section {
+    font-family: 'Inter', sans-serif;
+}
+::-webkit-scrollbar {
+    width: 0;
+}

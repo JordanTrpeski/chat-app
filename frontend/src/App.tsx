@@ -1,11 +1,19 @@
 import React from 'react';
+import {Route, BrowserRouter, Routes} from 'react-router-dom'
+
+import Login from "./routes/login";
+import Register from "./routes/register";
+import Index from "./routes";
 
 function App() {
   return (
-      <h1 className="text-3xl font-bold underline">
-        Hello world!
-      </h1>
-
+      <BrowserRouter>
+          <Routes>
+              <Route path="login" element={<Login/>}/>
+              <Route path="register" element={<Register/>}/>
+              <Route path="/" element={<Index/>}/>
+          </Routes>
+      </BrowserRouter>
   );
 }
 

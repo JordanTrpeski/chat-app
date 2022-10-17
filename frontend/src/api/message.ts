@@ -1,6 +1,6 @@
 import {api_url, process_result} from "./config";
 
-interface MessageContainer<T> {
+export interface MessageContainer<T> {
     id: string,
     sent_at: number,
     sender: string,
@@ -8,11 +8,11 @@ interface MessageContainer<T> {
     value: T
 }
 
-interface TextMessageValue {
+export interface TextMessageValue {
     text: string
 }
 
-type Message = MessageContainer<TextMessageValue>
+export type Message = MessageContainer<TextMessageValue>
 
 
 export async function get_messages_from_contact(contact: string, page: number) {
