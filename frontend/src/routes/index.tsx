@@ -14,10 +14,16 @@ import moment from "moment"
 
 const Contact : FC<{username: string, selected: boolean}> = ({username, selected}) => {
     const profile = useProfile(username)
+    const selectedContact = useSelectContact()
     if (profile === DataState.Errored || profile === DataState.Loading) {
         return <></>
     }
-    return <div className={"w-full text-left rounded p-2 focus:outline-none focus-visible:bg-indigo-50 " + (selected ? "bg-gray-100" : "cursor-pointer")}>
+    return <div className={"w-full text-left rounded p-2 focus:outline-none focus-visible:bg-indigo-50 " + (selected ? "bg-gray-100" : "cursor-pointer")}
+                onClick={() => {
+                    if (selected) return
+                    selectedContact.set(username)
+                }}
+    >
         <div className="flex items-center">
             <img className="rounded-full items-start flex-shrink-0 mr-3"
                  src="https://raw.githubusercontent.com/ViralJT/assets/master/human.jpg"
@@ -72,6 +78,7 @@ const AddContactModal : FC<{visible: number}> = ({visible}) => {
     useEffect(() => {
         if (addContact.sent) {
             close()
+            window.location.reload()
         }
     }, [addContact.sent])
 

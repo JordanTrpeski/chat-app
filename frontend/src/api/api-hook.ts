@@ -11,7 +11,7 @@ export type ApiResponse<T> = DataState | T
 export function useApi<T>(key : string, fn : () => Promise<T>) : ApiResponse<T> {
     const {isLoading, error, data} = useQuery(key,async () => {
         return await fn()
-    }, { retry: false })
+    }, { retry: false,  })
     if (isLoading) {
         return DataState.Loading
     }

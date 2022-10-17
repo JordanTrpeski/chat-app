@@ -19,16 +19,29 @@ export function useAddContact(username: string) {
 }
 
 function useMessagesFromContact(contact: string) {
-    return useApi(`messages.${contact}`,async () => {
+    const context = useContext(messageContext)
+    const messages = useApi(`messages.${contact}`,async () => {
         let lastMessageArray : Message[]
         const messages : Message[] = []
         let page = 0
         do {
             lastMessageArray = await get_messages_from_contact(contact, page++)
-            messages.push(...lastMessageArray)
+            for(const message of lastMessageArray) {
+                if (messages.find(x => x.id === message.id)) {
+                    continue
+                }
+                if (context.messages.find(x => x.id === message.id)) {
+                    continue
+                }
+                messages.push(message)
+            }
         } while(lastMessageArray.length !== 0)
         return messages
     })
+    if (messages === DataState.Errored || messages === DataState.Loading) {
+        return []
+    }
+    return messages
 }
 
 export function useSendMessageToContact(contact: string, message: TextMessageValue) {
@@ -43,7 +56,7 @@ export function useMessageSubscription() {
 
 export function useMessageListener(source : EventSource, callback: (message: Message) => void) {
     const cb = useCallback<EventListener>(value => {
-        callback((value as any).data as Message)
+        callback(JSON.parse((value as any).data) as Message)
     }, [callback])
 
     useEffect(() => {
@@ -96,17 +109,8 @@ export function useSelectContact() {
 export function useMessages() : Message[] {
     const messageCtx = useContext(messageContext)
     const messages = useMessagesFromContact(messageCtx.selectedContact)
-
-    return useMemo(() => {
-
-        if (messages === DataState.Errored || messages === DataState.Loading) {
-            return []
-        }
-
-        return messages
-            .concat(messageCtx.messages)
-            .filter(x => x.sender === messageCtx.selectedContact || x.receiver === messageCtx.selectedContact)
-            .sort((a, b) => a.sent_at - b.sent_at)
-
-    },[messages, messageCtx.messages.length, messageCtx.messages])
+    return messageCtx.messages
+        .concat(messages)
+        .filter(x => x.sender === messageCtx.selectedContact || x.receiver === messageCtx.selectedContact)
+        .sort((a, b) => a.sent_at - b.sent_at)
 }
