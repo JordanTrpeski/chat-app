@@ -24,7 +24,7 @@ export async function get_messages_from_contact(contact: string, page: number) {
 }
 
 export async function send_message_to_contact(contact: string, message: TextMessageValue) {
-    const value = await fetch(api_url + `/message/${encodeURIComponent(contact)}}`,{
+    const value = await fetch(api_url + `/message/${encodeURIComponent(contact)}`,{
         method: 'POST',
         body: JSON.stringify(message),
         headers: {

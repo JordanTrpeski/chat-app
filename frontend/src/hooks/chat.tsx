@@ -25,7 +25,7 @@ function useMessagesFromContact(contact: string) {
         let page = 0
         do {
             lastMessageArray = await get_messages_from_contact(contact, page++)
-            messages.push(...messages)
+            messages.push(...lastMessageArray)
         } while(lastMessageArray.length !== 0)
         return messages
     })
@@ -56,16 +56,21 @@ export function useMessageListener(source : EventSource, callback: (message: Mes
 
 interface MessageContext {
     messages: Message[],
+    selectedContact: string,
+    setSelectedContact: (contact: string) => void
 }
 
 const messageContext = createContext<MessageContext>({
     messages:[],
+    selectedContact: "",
+    setSelectedContact: () => {}
 })
+
 
 export const MessageContext : FC<{children: ReactNode}> = ({children}) => {
     const messageSubscription = useMessageSubscription()
     const [messages, setMessages] = useState<Message[]>([])
-
+    const [selectedContact, setSelectedContact] = useState<string>("")
 
     useMessageListener(messageSubscription,message => {
         setMessages(messages => [...messages, message])
@@ -73,25 +78,35 @@ export const MessageContext : FC<{children: ReactNode}> = ({children}) => {
 
     return <messageContext.Provider value={{
         messages,
+        selectedContact: selectedContact,
+        setSelectedContact: contact => setSelectedContact(contact)
     }}>
         {children}
     </messageContext.Provider>
 }
 
-export function useMessages(contact: string) : Message[] {
-    const messages = useMessagesFromContact(contact)
+export function useSelectContact() {
     const messageCtx = useContext(messageContext)
+    return {
+        set: messageCtx.setSelectedContact,
+        value: messageCtx.selectedContact
+    }
+}
+
+export function useMessages() : Message[] {
+    const messageCtx = useContext(messageContext)
+    const messages = useMessagesFromContact(messageCtx.selectedContact)
 
     return useMemo(() => {
+
         if (messages === DataState.Errored || messages === DataState.Loading) {
             return []
         }
 
         return messages
             .concat(messageCtx.messages)
-            .filter(x => x.sender === contact || x.receiver === contact)
-            .filter((value, index, self) => index === self.findIndex(t => t.id))
+            .filter(x => x.sender === messageCtx.selectedContact || x.receiver === messageCtx.selectedContact)
             .sort((a, b) => a.sent_at - b.sent_at)
 
-    }, [messageCtx.messages, messages])
+    },[messages, messageCtx.messages.length, messageCtx.messages])
 }

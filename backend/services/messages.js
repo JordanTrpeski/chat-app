@@ -60,21 +60,27 @@ async function get_messages(token, contact, page) {
 }
 
 async function subscribe_for_messages(token, handler) {
-    const sub = subscriber()
-    const sender = get_user_id_from_token(token)
-    const event_id = '_' + sender.replaceAll('-','')
+    try {
+        const sender = get_user_id_from_token(token)
+        const sub = subscriber()
+        const event_id = '_' + sender.replaceAll('-','')
 
-    sub.connect().then(async() => {
-        debug(`CONNECT ${event_id}`)
-        await sub.listenTo(event_id)
-        sub.notifications.on(event_id, async payload => {
-            handler(await process_message_payload(payload))
+        sub.connect().then(async() => {
+            debug(`CONNECT ${event_id}`)
+            await sub.listenTo(event_id)
+            sub.notifications.on(event_id, async payload => {
+                handler(await process_message_payload(payload))
+            })
         })
-    })
-    return () => {
-        debug(`CLOSE ${event_id}`)
-        sub.close()
+        return () => {
+            debug(`CLOSE ${event_id}`)
+            sub.close()
+        }
+    } catch {
+        return () => {}
     }
+
+
 }
 
 module.exports = {
